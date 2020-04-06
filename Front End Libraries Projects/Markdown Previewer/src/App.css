@@ -28,7 +28,6 @@ html, body {
 
 .Previewer {
     width: 600px;
-    height: 150px;
     background: greenyellow;
     overflow: scroll;
 }
