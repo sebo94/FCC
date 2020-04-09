@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Controls from "../components/Controls/Controls";
 import DrumPads from "../components/DrumPads/DrumPads";
+import classes from "./App.module.css";
 
 const bankOne = [
   {
@@ -102,12 +103,63 @@ const bankTwo = [
 class App extends Component {
   state = {
     soundBank: bankOne,
+    bankName: "Heater Kit",
+    display: "",
+    power: true,
+    volume: 1,
   };
+
+  displayUpdated = (newDisplay) => {
+    this.setState({ display: newDisplay });
+  };
+
+  togglePowerHandler = () => {
+    this.setState((prevState) => {
+      return { power: !prevState.power, display: "" };
+    });
+  };
+
+  soundBankChangedHandler = () => {
+    const bankName = this.state.bankName;
+    if (bankName === "Heater Kit") {
+      this.setState({
+        soundBank: bankTwo,
+        bankName: "Smooth Piano Kit",
+        display: "Smooth Piano Kit",
+      });
+    } else {
+      this.setState({
+        soundBank: bankOne,
+        bankName: "Heater Kit",
+        display: "Heater Kit",
+      });
+    }
+  };
+
+  changeVolumeHandler = (event) => {
+    this.setState({ volume: event.target.value, display: 'volume: ' + event.target.value });
+    setTimeout(() => {
+      this.setState({display: ''})
+    }, 600);
+  };
+
   render() {
     return (
-      <div>
-        <DrumPads soundBank={this.state.soundBank} />
-        <Controls />
+      <div className={classes.App}>
+        <DrumPads
+          soundBank={this.state.soundBank}
+          displayUpdated={this.displayUpdated}
+          power={this.state.power}
+          volume={this.state.volume}
+        />
+        <Controls
+          sampleName={this.state.display}
+          togglePower={this.togglePowerHandler}
+          power={this.state.power}
+          changeSoundBank={this.soundBankChangedHandler}
+          volume={this.state.volume}
+          changeVolume={this.changeVolumeHandler}
+        />
       </div>
     );
   }

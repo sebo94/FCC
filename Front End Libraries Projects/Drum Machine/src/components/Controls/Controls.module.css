@@ -1,0 +1,12 @@
+.Controls {
+  display: grid;
+  place-items: center;
+}
+
+.PowerOn {
+  background-color: green;
+}
+
+.PowerOff {
+  background-color: red;
+}
