@@ -1,105 +1,133 @@
 import React, { Component } from "react";
+import Display from "../components/Display/Display";
+import Expression from "../components/Expression/Expression";
+import Controls from "../components/Controls/Controls";
 import classes from "./App.module.css";
 
-const symbols = [
-  "0",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
+const BUTTONS = [
   "7",
   "8",
   "9",
-  ".",
+  "4",
+  "5",
+  "6",
+  "1",
+  "2",
+  "3",
+  "0",
   "+",
   "-",
-  "/",
   "*",
+  "/",
+  ".",
+  "AC",
+  "=",
 ];
 
 class App extends Component {
   state = {
-    display: "",
-    result: "",
+    display: "0",
+    expression: "",
+    controlsBank: BUTTONS,
   };
 
-  updateDisplayHandler = (event) => {
-    const inputChar = event.target.id;
-    switch (inputChar) {
-      case "+":
-        this.setState({ result: "+" });
-        break;
-      case "-":
-        this.setState({ result: "-" });
-        break;
-      case "*":
-        this.setState({ result: "*" });
-        break;
-      case "/":
-        this.setState({ result: "/" });
-        break;
-      case ".":
-        this.setState((prevState) => {
-          console.log(prevState.result)
-          return { result: prevState.result + inputChar };
-        });
-        break;
-      default:
-        this.setState((prevState) => {
-          const regex = /[+-/*]/;
-          const nextState = regex.test(prevState.result)
-            ? ""
-            : prevState.result;
-          return { result: nextState + inputChar };
-        });
-        break;
-    }
-
-    this.updateResultHandler(inputChar);
-    
-  };
-
-  updateResultHandler = (inputChar) => {
+  updateDisplay = (event) => {
+    const keyPressed = event.target.textContent;
     this.setState((prevState) => {
-      const prevDisplay = prevState.display;
-      if (prevDisplay.slice(-1) === inputChar) {
-        return;
-      } else {
+      const previousDisplay = prevState.display;
+      const previousExpression = prevState.expression;
+      const lastChar = previousExpression.substr(previousExpression.length - 1);
+      // Avoid consecutive operator signs
+      if (
+        (lastChar === "+" && keyPressed === lastChar) ||
+        (lastChar === "-" && keyPressed === lastChar) ||
+        (lastChar === "*" && keyPressed === lastChar) ||
+        (lastChar === "/" && keyPressed === lastChar)
+      ) {
+        return { display: previousDisplay, expression: previousExpression };
+      }
+      let nextDisplay = "";
+      // If we are already showing an operation sign
+      if (
+        previousDisplay === "+" ||
+        previousDisplay === "-" ||
+        previousDisplay === "*" ||
+        previousDisplay === "/"
+      ) {
         return {
-          display: prevDisplay + inputChar,
+          display: keyPressed,
+          expression: previousExpression + keyPressed,
+        };
+      }
+      // If the keypressed is an operation sign
+      if (
+        keyPressed === "+" ||
+        keyPressed === "-" ||
+        keyPressed === "*" ||
+        keyPressed === "/"
+      ) {
+        return {
+          display: keyPressed,
+          expression: previousExpression + keyPressed,
+        };
+      }
+
+      // If we start with a 0, do not concat the display, unless we put a "."
+      if (previousDisplay === "0") {
+        nextDisplay =
+          keyPressed === "."
+            ? (nextDisplay = previousDisplay + keyPressed)
+            : (nextDisplay = keyPressed);
+        return {
+          display: nextDisplay,
+          expression: previousExpression + keyPressed,
+        };
+      }
+      // Check if the display already contains a "." character
+      if (keyPressed === ".") {
+        nextDisplay = previousDisplay.includes(keyPressed)
+          ? previousDisplay
+          : previousDisplay + keyPressed;
+        return {
+          display: nextDisplay,
+          expression: previousExpression + keyPressed,
+        };
+      } else {
+        nextDisplay = previousDisplay + keyPressed;
+        return {
+          display: nextDisplay,
+          expression: previousExpression + keyPressed,
         };
       }
     });
-  }
+  };
+
+  resetDisplay = (event) => {
+    const keyPressed = event.target.textContent;
+    if (keyPressed === "AC") {
+      this.setState({ display: "0", expression: "" });
+    }
+  };
 
   performCalculus = () => {
-    const regex = /[.+-/*]/;
-    const myVar = this.state.display.split(regex);
-    console.log(myVar);
+    this.setState((prevState) => {
+      const expression = this.state.expression;
+      const result = eval(expression);
+      return { display: result, expression: expression + "=" + result };
+    });
   };
 
   render() {
     return (
       <div className={classes.App}>
-        <div className={classes.Display}>{this.state.display}</div>
-        <div className={classes.Result}>{this.state.result}</div>
-        <button onClick={this.performCalculus}>=</button>
-        <div className={classes.NumbersGrid}>
-          {symbols.map((number) => {
-            return (
-              <div
-                key={number}
-                onClick={this.updateDisplayHandler}
-                className={classes.Number}
-                id={number}
-              >
-                {number}
-              </div>
-            );
-          })}
-        </div>
+        <Expression currentExpression={this.state.expression} />
+        <Display currentDisplay={this.state.display} />
+        <Controls
+          controls={this.state.controlsBank}
+          updateDisplay={this.updateDisplay}
+          performCalculus={this.performCalculus}
+          resetDisplay={this.resetDisplay}
+        />
       </div>
     );
   }

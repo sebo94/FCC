@@ -1,0 +1,6 @@
+.Display {
+  display: flex;
+  align-self: flex-end;
+  border: 2px solid green;
+  height: 20px;
+}

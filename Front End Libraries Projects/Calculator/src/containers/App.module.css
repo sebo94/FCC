@@ -1,24 +1,10 @@
 .App {
   width: 300px;
-  height: 350px;
+  height: 450px;
   border: 2px solid;
-  display: grid;
-}
-
-.Display {
-  height: 25px;
-  width: 50%;
-  border: 1px solid purple;
-}
-
-.NumbersGrid {
-  width: 150px;
-  height: 200px;
-  border: 2px solid green;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.Number {
-  border: 2px solid yellow;
+  background: black;
+  margin: 0 auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
 }
