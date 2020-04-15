@@ -1,0 +1,10 @@
+.Toolbar {
+    border-bottom: 2px solid;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.Toolbar img {
+    width: 30px;
+}

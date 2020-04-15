@@ -1,0 +1,13 @@
+.Previewer {
+  width: 800px;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  margin: 0 auto;
+}
+
+.PreviewerBody {
+  padding: 10px;
+}
+
+.Fullscreen {
+  width: 99%;
+}
