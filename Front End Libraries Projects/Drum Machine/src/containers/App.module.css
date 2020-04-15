@@ -3,6 +3,13 @@
     width: 600px;
     background: #ccc;
     border: 1px solid;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+}
+
+@media (max-width: 600px) {
+    .App {
+        width: 400px;
+        height: 500px;
+        flex-direction: column;
+    }
 }

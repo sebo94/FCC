@@ -1,6 +1,8 @@
 .Controls {
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .PowerOn {
@@ -9,4 +11,35 @@
 
 .PowerOff {
   background-color: red;
+}
+
+button {
+  border: none;
+  background-color: transparent;
+  border: 1px solid;
+  padding: 0.2em 0.9em;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 100ms ease-in-out;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+.SampleName {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 50px;
+  background: rgb(184, 184, 184);
+}
+
+@media (max-width: 600px) {
+  button {
+    margin: 20px 0;
+  }
+  .BtnSwitch {
+    margin-top: 20px;
+  }
 }

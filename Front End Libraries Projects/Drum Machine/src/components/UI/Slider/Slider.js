@@ -4,7 +4,7 @@ import classes from "./Slider.module.css";
 const slider = (props) => (
   <div>
     <div className={classes.Slidecontainer}>
-      <p>Custom range slider:</p>
+      <p className={classes.SliderText}>Volume:</p>
       <input
         type="range"
         min="0"

@@ -4,6 +4,11 @@
   cursor: pointer;
   box-shadow: 3px 3px 2px rgba(0, 0, 0, 0.4);
   position: relative;
+  transition: transform 100ms ease-out;
+}
+
+.DrumPad:hover {
+  transform: scale(1.05);
 }
 
 .DrumPadClicked {

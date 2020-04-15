@@ -62,3 +62,14 @@
   background: #4caf50;
   cursor: pointer;
 }
+
+.SliderText {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .Slider {
+    margin-bottom: 20px;
+  }
+}

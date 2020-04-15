@@ -1,20 +1,17 @@
 import React from "react";
 import classes from "./Controls.module.css";
 import Slider from "../UI/Slider/Slider";
+import BtnSwitch from "../UI/Button/BtnSwitch/BtnSwitch";
 
 const controls = (props) => {
   return (
     <div className={classes.Controls}>
-      <p>Controls</p>
-      <p>{props.sampleName}</p>
-      <button
-        className={props.power ? classes.PowerOn : classes.PowerOff}
-        onClick={props.togglePower}
-      >
-        Power
-      </button>
+      <div className={classes.SampleName}>{props.sampleName}</div>
+      <div className={classes.BtnSwitch}>
+        <BtnSwitch isOn={props.power} handleToggle={props.togglePower} />
+      </div>
       <button onClick={props.changeSoundBank} disabled={!props.power}>
-        Change Sounds
+        Bank
       </button>
       <Slider
         volume={props.volume}
