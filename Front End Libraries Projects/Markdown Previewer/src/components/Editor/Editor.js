@@ -1,11 +1,9 @@
 import React from "react";
 import Toolbar from "../../UI/Toolbar/Toolbar";
-import './Editor.css';
+import "./Editor.css";
 
 const editor = (props) => {
-  const myClasses = props.fullScreen
-    ? ["Editor", "Fullscreen" ]
-    : ["Editor"];
+  const myClasses = props.fullScreen ? ["Editor", "Fullscreen"] : ["Editor"];
   return (
     <div className={myClasses.join(" ")}>
       <Toolbar
@@ -14,6 +12,7 @@ const editor = (props) => {
         toggleSize={props.toggleSize}
       />
       <textarea
+        id="editor"
         value={props.markdown}
         onChange={props.changeHandler}
       ></textarea>
