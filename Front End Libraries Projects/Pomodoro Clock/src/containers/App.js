@@ -12,6 +12,8 @@ const initialState = {
   display: "25:00",
   paused: false,
   session: true,
+  btnStart: false,
+  reset: false,
 };
 
 class App extends Component {
@@ -45,11 +47,15 @@ class App extends Component {
   };
 
   countDown = (minutes, seconds, interrupted) => {
-    interrupted ? this.tick(minutes, seconds) : this.tick(minutes - 1, 60);
+    console.log(minutes, seconds)
+    if (interrupted === undefined) {
+    console.log("what the heck is going on here")
+    } else {
+      interrupted ? this.tick(minutes, seconds) : this.tick(minutes - 1, 60);
+    }
   };
 
   tick = (minutes, seconds) => {
-    console.log(this.state.paused, minutes, seconds);
     if (!this.state.paused) {
       seconds--;
       const newTime =
@@ -96,6 +102,7 @@ class App extends Component {
       .map((value) => Number.parseInt(value));
     const minutes = intValues[0];
     const seconds = intValues[1];
+    this.setState({ btnStart: true });
     this.state.paused
       ? this.setState(
           (prevState) => {
@@ -107,7 +114,18 @@ class App extends Component {
   };
 
   pauseTimer = () => {
-    this.setState({ paused: !this.state.paused});
+    this.setState({ paused: !this.state.paused, btnStart: false });
+  };
+
+  resetTimer = () => {
+    this.setState({
+      reset: false,
+      paused: true,
+      btnStart: false,
+      breakLenght: 5,
+      sessionLenght: 25,
+      display: "25:00",
+    });
   };
 
   render() {
@@ -117,10 +135,12 @@ class App extends Component {
         <BreakSettings
           breakLenght={this.state.breakLenght}
           updateBreak={this.updateBreak}
+          paused={this.state.reset}
         />
         <SessionSettings
           sessionLenght={this.state.sessionLenght}
           updateSession={this.updateSession}
+          paused={this.state.reset}
         />
         <Display
           currentValue={this.state.display}
@@ -129,6 +149,8 @@ class App extends Component {
         <Controls
           startTimer={this.startTimer}
           pauseTimer={this.pauseTimer}
+          resetTimer={this.resetTimer}
+          paused={this.state.btnStart}
         />
       </div>
     );
