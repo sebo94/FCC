@@ -26,7 +26,8 @@ const BUTTONS = [
 
 class App extends Component {
   state = {
-    display: "0",
+    currentValue: "0",
+    previousValue: "",
     expression: "",
     controlsBank: BUTTONS,
     evaluated: false,
@@ -34,79 +35,138 @@ class App extends Component {
 
   updateDisplay = (event) => {
     const isOperator = /[+\-*/]/;
+    const isSign = /[+-]/;
+    const isDivMult = /[*/]/;
     const keyPressed = event.target.textContent;
     this.setState((prevState) => {
-      const previousDisplay = prevState.display;
-      const previousExpression = prevState.expression;
-      const lastChar = previousExpression.charAt(previousExpression.length - 1);
+      const { previousValue, currentValue, expression } = prevState;
       // Make one calculation per = press
-      if (previousExpression.includes("=")) {
-        const result = previousExpression.split("=").pop();
+      if (expression.includes("=")) {
+        const previousResult = expression.split("=").pop();
         if (isOperator.test(keyPressed)) {
           return {
-            display: keyPressed,
-            expression: result + keyPressed,
+            previousValue: keyPressed,
+            currentValue: keyPressed,
+            expression: previousResult + keyPressed,
             evaluated: false,
           };
         } else {
           return {
-            display: keyPressed,
+            previousValue: keyPressed,
+            currentValue: keyPressed,
             expression: keyPressed,
             evaluated: false,
           };
         }
       }
-      // Avoid consecutive operator
-      if (isOperator.test(lastChar) && isOperator.test(keyPressed)) {
-        // Implement case of minus and let them concat twice
-
-        let splittedString = previousExpression.split("");
-        splittedString.splice(splittedString.length - 1, 1);
-        const nextExpression = splittedString.concat(keyPressed).join("");
-        return {
-          display: keyPressed,
-          expression: nextExpression,
-          evaluated: false,
-        };
-      }
-      // If display or expression is an operation sign
-      if (isOperator.test(previousDisplay) || isOperator.test(keyPressed)) {
-        return {
-          display: keyPressed,
-          expression: previousExpression + keyPressed,
-          evaluated: false,
-        };
-      }
-      let nextDisplay = "";
-      let nextExpression = "";
-      // If we start with a 0, do not concat the display, unless we put a "."
-      if (previousDisplay === "0" || previousExpression === "0") {
-        nextDisplay =
-          keyPressed === "."
-            ? (nextDisplay = previousDisplay + keyPressed)
-            : (nextDisplay = keyPressed);
-        return {
-          display: nextDisplay,
-          expression: nextDisplay,
-          evaluated: false,
-        };
+      // If the current value is 0 do not concat unless we are pressing a "."
+      if (currentValue === "0") {
+        if (keyPressed === ".") {
+          if (expression !== "0") {
+            return {
+              previousValue: keyPressed,
+              currentValue: currentValue + keyPressed,
+              expression: "0" + expression + keyPressed,
+              evaluated: false,
+            };
+          }
+        } else {
+          return {
+            previousValue: keyPressed,
+            currentValue: keyPressed,
+            expression: keyPressed,
+            evaluated: false,
+          };
+        }
       }
       // Handle "." press
       if (keyPressed === ".") {
-        
-        nextDisplay = previousDisplay.includes(keyPressed)
-          ? previousDisplay
-          : previousDisplay + keyPressed;
+        // After an operator is pressed, if we have no number add a 0
+        if (isOperator.test(previousValue)) {
+          return {
+            previousValue: keyPressed,
+            currentValue: "0" + keyPressed,
+            expression: expression + "0" + keyPressed,
+            evaluated: false,
+          };
+        }
+        // If we already have a "."
+        if (currentValue.includes(".")) {
+          return {
+            previousValue: keyPressed,
+            currentValue: currentValue,
+            expression: expression,
+            evaluated: false,
+          };
+        } else {
+          return {
+            previousValue: keyPressed,
+            currentValue: currentValue + keyPressed,
+            expression: expression + keyPressed,
+            evaluated: false,
+          };
+        }
+      }
+      // Handle operator press
+      if (isOperator.test(keyPressed)) {
+        // If we press a sign, we want to be able to concat, otherwise we replace the char
+        if (isSign.test(keyPressed)) {
+          // If we chain more than two operators, nothing happens
+          if (
+            isOperator.test(expression.charAt(expression.length - 1)) &&
+            isOperator.test(expression.charAt(expression.length - 2))
+          ) {
+            return {
+              previousValue: keyPressed,
+              currentValue: currentValue,
+              expression: expression,
+              evaluated: false,
+            };
+          } else {
+            return {
+              previousValue: keyPressed,
+              currentValue: keyPressed,
+              expression: expression + keyPressed,
+              evaluated: false,
+            };
+          }
+        } else {
+          // If the last and second to last are not operators replace that, otherwise cut and replace
+          const lastChar = expression.charAt(expression.length - 1);
+          const secondToLastChar = expression.charAt(expression.length - 2);
+          if (
+            !(isOperator.test(lastChar) && isOperator.test(secondToLastChar))
+          ) {
+            let newExpression = isOperator.test(previousValue)
+              ? expression.replace(/.$/, keyPressed)
+              : expression + keyPressed;
+            return {
+              previousValue: keyPressed,
+              currentValue: keyPressed,
+              expression: newExpression,
+              evaluated: false,
+            };
+          } else {
+            let newExpression = expression.substring(0, expression.length - 2);
+            console.log(newExpression);
+            return {
+              previousValue: keyPressed,
+              currentValue: keyPressed,
+              expression: newExpression + keyPressed,
+              evaluated: false,
+            };
+          }
+        }
+      }
+      // Handle number press
+      if (!Number.isNaN(keyPressed)) {
+        let nextValue = isOperator.test(previousValue)
+          ? keyPressed
+          : currentValue + keyPressed;
         return {
-          display: nextDisplay,
-          expression: nextExpression,
-          evaluated: false,
-        };
-      } else {
-        nextDisplay = previousDisplay + keyPressed;
-        return {
-          display: nextDisplay,
-          expression: previousExpression + keyPressed,
+          previousValue: keyPressed,
+          currentValue: nextValue,
+          expression: expression + keyPressed,
           evaluated: false,
         };
       }
@@ -116,18 +176,20 @@ class App extends Component {
   performCalculus = () => {
     this.setState((prevState) => {
       if (!this.state.evaluated) {
-        let expression = prevState.expression;
+        let { expression } = prevState;
         const regex = /[+\-*/.]/;
+        const isDivMult = /[*/]/;
         // If we end on an operation sign, remove it before calculating
         if (regex.test(expression.charAt(expression.length - 1))) {
-          const newExp = expression.split("");
-          newExp.pop();
-          expression = newExp.join("");
+          if (regex.test(expression.charAt(expression.length - 2))) {
+            expression = expression.substring(0, expression.length - 1);
+          }
+          expression = expression.substring(0, expression.length - 1);
         }
         // If we start with an operation sign or we only have one operation sign, return invalid
         if (
           (regex.test(expression) && expression.length === 1) ||
-          regex.test(expression.charAt(0))
+          isDivMult.test(expression.charAt(0))
         ) {
           return {
             display: "NaN",
@@ -137,7 +199,7 @@ class App extends Component {
           const result =
             Math.round(1000000000000 * eval(expression)) / 1000000000000;
           return {
-            display: result,
+            currentValue: result,
             expression: expression + "=" + result,
             evaluated: true,
           };
@@ -149,7 +211,7 @@ class App extends Component {
   resetDisplay = (event) => {
     const keyPressed = event.target.textContent;
     if (keyPressed === "AC") {
-      this.setState({ display: "0", expression: "", evaluated: false });
+      this.setState({ currentValue: "0", expression: "", evaluated: false });
     }
   };
 
@@ -157,7 +219,7 @@ class App extends Component {
     return (
       <div className={classes.App}>
         <Expression currentExpression={this.state.expression} />
-        <Display currentDisplay={this.state.display} />
+        <Display currentDisplay={this.state.currentValue} />
         <Controls
           controls={this.state.controlsBank}
           updateDisplay={this.updateDisplay}
