@@ -1,6 +1,5 @@
 .Controls {
   height: 100%;
-  border: 2px solid white;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
 }

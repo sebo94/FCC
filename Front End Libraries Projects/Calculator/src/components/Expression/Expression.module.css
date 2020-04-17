@@ -1,5 +1,6 @@
 .Expression {
   align-self: flex-end;
-  height: 20px;
-  border: 2px solid yellow;
+  height: 40px;
+  color: rgb(238,154,0);
+  font-size: 1.4rem;
 }
