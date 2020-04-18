@@ -1,0 +1,16 @@
+.Arrow {
+  cursor: pointer;
+  transition: transform 100ms ease-out, opacity 100ms ease-out;
+  opacity: 0.5;
+}
+
+.Arrow:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.Length {
+  display: inline-block;
+  font-size: 24px;
+  margin: 0 20px;
+}

@@ -20,12 +20,12 @@ class App extends Component {
   state = initialState;
 
   updateBreak = (event) => {
-    const action = event.target.innerHTML;
+    const action = event.target.id;
     this.setState((prevState) => {
       const currentBreakLenght = prevState.breakLenght;
       if (currentBreakLenght < 60 && currentBreakLenght > 1) {
         const nextBreakLenght =
-          action === "Up" ? currentBreakLenght + 1 : currentBreakLenght - 1;
+          action === "breakUp" ? currentBreakLenght + 1 : currentBreakLenght - 1;
         return { breakLenght: nextBreakLenght };
       }
     });
@@ -37,7 +37,7 @@ class App extends Component {
       const currentSessionLenght = prevState.sessionLenght;
       if (currentSessionLenght < 60 && currentSessionLenght > 1) {
         const nextSessionLenght =
-          action === "Up" ? currentSessionLenght + 1 : currentSessionLenght - 1;
+          action === "sessionUp" ? currentSessionLenght + 1 : currentSessionLenght - 1;
         return {
           sessionLenght: nextSessionLenght,
           display: nextSessionLenght.toString() + ":00",
@@ -47,9 +47,11 @@ class App extends Component {
   };
 
   countDown = (minutes, seconds, interrupted) => {
-    console.log(minutes, seconds)
-    if (interrupted === undefined) {
-    console.log("what the heck is going on here")
+    // Something very weird happens here
+    // setState gets called twice for some reason, will leave it this way for now
+    if (interrupted === undefined && !this.state.reset) {
+      const sessionLenght = this.state.sessionLenght - 1;
+      this.tick(sessionLenght, 60);
     } else {
       interrupted ? this.tick(minutes, seconds) : this.tick(minutes - 1, 60);
     }
@@ -79,7 +81,7 @@ class App extends Component {
             (prevState) => {
               return {
                 display: prevState.sessionLenght.toString() + ":00",
-                session: false,
+                session: true,
               };
             },
             () => this.startTimer()
@@ -131,17 +133,19 @@ class App extends Component {
   render() {
     return (
       <div className={classes.App}>
-        Pomodoro Clock
-        <BreakSettings
-          breakLenght={this.state.breakLenght}
-          updateBreak={this.updateBreak}
-          paused={this.state.reset}
-        />
-        <SessionSettings
-          sessionLenght={this.state.sessionLenght}
-          updateSession={this.updateSession}
-          paused={this.state.reset}
-        />
+        <h4 className={classes.Title}>Pomodoro Clock</h4>
+        <div className={classes.Settings}>
+          <BreakSettings
+            breakLenght={this.state.breakLenght}
+            updateBreak={this.updateBreak}
+            paused={this.state.btnStart}
+          />
+          <SessionSettings
+            sessionLenght={this.state.sessionLenght}
+            updateSession={this.updateSession}
+            paused={this.state.btnStart}
+          />
+        </div>
         <Display
           currentValue={this.state.display}
           session={this.state.session}

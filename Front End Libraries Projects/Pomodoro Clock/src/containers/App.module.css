@@ -1,5 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
 .App {
-    background: #ffcccb;
-    height: 300px;
-    width: 450px;
+  height: 300px;
+  width: 450px;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  border-radius: 50px;
+  background: #30475e;
+  color: #eee;
+  padding: 20px;
+}
+
+.Settings {
+    display: flex;
+    justify-content: space-around;
+}
+
+.Title {
+  margin: 0;
+  font-size: 1.5rem;
 }
